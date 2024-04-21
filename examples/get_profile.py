@@ -21,34 +21,40 @@ if ACCESS_TOKEN is None:
         'A valid access token must be defined in the /examples/.env file under the variable name "ACCESS_TOKEN"'
     )
 
-PROFILE_RESOURCE = "/me"
+PROFILE_RESOURCE = "/userinfo"
 
 restli_client = RestliClient()
 
 """
 Basic usage to fetch current member profile
 """
-response = restli_client.get(resource_path=PROFILE_RESOURCE, access_token=ACCESS_TOKEN)
-print("Basic usage:", response.entity)
+response_basic = restli_client.get(
+    resource_path=PROFILE_RESOURCE, access_token=ACCESS_TOKEN
+)
+print("Basic usage:", response_basic.entity)
+
 
 """
 Usage with field projections
 """
-response = restli_client.get(
+response_field_projects = restli_client.get(
     resource_path=PROFILE_RESOURCE,
     access_token=ACCESS_TOKEN,
-    query_params={"fields": "id,firstName:(localized),lastName"},
+    query_params={
+        "fields": "sub,email_verified,name,locale,given_name,family_name,email,picture"
+    },
 )
-print("\n\nUsage with field projections:", response.entity)
+print("\n\nUsage with field projections:", response_field_projects.entity)
 
 """
 Usage with decoration of displayImage
 """
-response = restli_client.get(
+
+response_display_image = restli_client.get(
     resource_path=PROFILE_RESOURCE,
     access_token=ACCESS_TOKEN,
     query_params={
-        "projection": "(id,firstName,lastName,profilePicture(displayImage~:playableStreams))"
+        "projection": "(sub,given_name,family_name,picture(displayImage~:playableStreams))"
     },
 )
-print("\n\nUsage with decoration:", response.entity)
+print("\n\nUsage with decoration:", response_display_image.entity)
